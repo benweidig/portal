@@ -80,14 +80,14 @@ case $CMD in
         fi
 
         # RETRIEVE RUNNING CONTAINER LIST
-        SSH_OUTPUT=$(ssh $HOST "docker container ls --format '{{json .}}'")
+        SSH_OUTPUT=$(ssh "$HOST" "docker container ls --format '{{json .}}'")
 
         # EXTRACT NECESSARY INFOS AND PRINT AS TABLE
         OUTPUT=$(printf "CONTAINER\t| PORTS\n")
         while IFS= read -r line; do
             NAME=$(jq -r '.Names' <<< "$line")
             PORTS=$(jq -r '.Ports' <<< "$line")
-            PORTS=$(sed -e "$PORT_SANITIZER" <<< $PORTS)
+            PORTS=$(sed -e "$PORT_SANITIZER" <<< "$PORTS")
             PORTS=$(sed -e "s/\([0-9]*\)\(,*\)/${COLOR_WHITE}\1${COLOR_RESET}\2/" <<< $PORTS)
             OUTPUT=$(printf "%s\n%s\t| %s" "${OUTPUT}" "${NAME}" "${PORTS}")
         done < <(echo "$SSH_OUTPUT")
@@ -112,7 +112,7 @@ case $CMD in
         CONTAINER_PORT=${BASH_REMATCH[2]:1}
         
         # RETRIEVE NETWORK SETTINGS OF CONTAINER FOR AT LEAST THE IP
-        SSH_OUTPUT=$(ssh $HOST "docker inspect --format '{{json .NetworkSettings}}' $CONTAINER_NAME")
+        SSH_OUTPUT=$(ssh "$HOST" "docker inspect --format '{{json .NetworkSettings}}' $CONTAINER_NAME")
         
         # THE IP IS EITHER DIRECTLY IN .NetworkSettings
         # OR WE CHECK THE FIRST NETWORK
@@ -134,13 +134,13 @@ case $CMD in
         # FIND CORRECT LOCAL PORT (EITHER CONTAINER PORT OR PROVIDED) AND CHECK IF AVAILABLE
         LOCAL_PORT=$4
         if [[ -z "$LOCAL_PORT" ]]; then
-            nc -z 127.0.0.1 $CONTAINER_PORT > /dev/null 2>&1
+            nc -z 127.0.0.1 "$CONTAINER_PORT" > /dev/null 2>&1
             if [[ $? -eq 0 ]]; then
                 >&2 echo "Local port $CONTAINER_PORT is already in use"
                 exit 1
             fi
         else
-            nc -z 127.0.0.1 $LOCAL_PORT > /dev/null 2>&1
+            nc -z 127.0.0.1 "$LOCAL_PORT" > /dev/null 2>&1
             if [[ $? -eq 0 ]]; then
                 >&2 echo "Local port $LOCAL_PORT is already in use"
                 exit 1
