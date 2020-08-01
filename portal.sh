@@ -33,7 +33,7 @@ done
 
 
 # PRINT HELP IF NO ARGS
-if [[ $# -eq 0 ]]; then
+if [[ $# -lt 2 ]]; then
     echo "Portal - SSH port forwarding helper (${VERSION})"
     echo ""
     echo "Usage:  ${0##*/} <command> <host> [<command args>]"
@@ -47,21 +47,6 @@ if [[ $# -eq 0 ]]; then
     exit 1
 fi
 
-
-# VALIDATE NUMBER OF ARGS AND VALID COMMANDS
-if [[ $# -lt 2 ]]; then
-    >&2 echo "Invalid number of arguments."
-    exit 1
-fi
-
-
-# EXTRACT ACTUAL COMMAND AND VALIDATE
-CMD=$1
-
-if [[ $CMD -ne "ls" && $CMD -ne "bind" ]]; then
-    >&2 echo "Invalid command '$CMD'"
-    exit 1
-fi
 
 
 # VALIDATE HOST ARG
@@ -84,7 +69,7 @@ fi
 # REMOVES UDP-PORTS AND CONTAINER HOSTS FROM PORT DEFINITIONS
 PORT_SANITIZER="s/[0-9]*\/udp\(, \)\{0,1\}//g; s/.*->//g; s/\/tcp//g;"
 
-
+CMD=$1
 case $CMD in
 
     # COMMAND ls <host>
@@ -111,7 +96,7 @@ case $CMD in
         ;;
 
     # COMMAND bind <host> <container[:port]> [local port]
-    bind )
+    bind|connect )
         if [[ $# -lt 3 || $# -gt 4 ]]; then
             >&2 echo "Invalid number of arguments (expected: 3-4 - current: $#)"
             exit 1
@@ -168,7 +153,22 @@ case $CMD in
         echo "Container  : $CONTAINER_NAME:$CONTAINER_PORT"
         echo "Local port : $LOCAL_PORT"
         echo ""
-        echo "Press ^C to stop forwarding"
-        ssh -N -L  $LOCAL_PORT:$CONTAINER_IP:$CONTAINER_PORT $HOST
+
+        case $CMD in
+            bind )
+                echo "Press ^C to stop forwarding"
+                ssh -N -L "$LOCAL_PORT:$CONTAINER_IP:$CONTAINER_PORT" "$HOST"
+                ;;
+            connect )
+                echo "Press ^D to stop forwarding and exit connection"
+                ssh -L "$LOCAL_PORT:$CONTAINER_IP:$CONTAINER_PORT" "$HOST"
+                ;;
+        esac
         ;;
+
+    * )
+        >&2 echo "Invalid command '$CMD'"
+        exit 1
+        ;;
+
 esac
