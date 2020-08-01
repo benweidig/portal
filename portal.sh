@@ -140,7 +140,7 @@ case $CMD in
         if [[ -z "$CONTAINER_PORT" ]]; then
             FIRST_TCP=$(jq -r '.Ports | with_entries(select(.key | test(".*/tcp"))) | keys[0]' <<< "$SSH_OUTPUT")
             CONTAINER_PORT=$(sed -e "$PORT_SANITIZER" <<< "$FIRST_TCP")
-            if [[ -z "$CONTAINER_PORT" ]]; then
+            if [[ -z "$CONTAINER_PORT" || "$CONTAINER_PORT" == "null" ]]; then
                 >&2 echo "No container port was exposed or given as argument"
                 exit 1
             fi
