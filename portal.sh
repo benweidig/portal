@@ -9,11 +9,14 @@
 # Usage: ./portal.sh <command> <host> [<command args>]
 #
 # Commands:
-#   ls     List all available container and exposed ports
-#          Usage: ./portal.sh ls <host>
+#   ls      List all available container and exposed ports
+#           Usage: ./portal.sh ls <host>
 #
-#   bind   Start a SSH port forward for a container
-#          Usage: ./portal.sh ls <host> <container[:port]> [<local port>]
+#   bind    Start a SSH port forward for a container
+#           Usage: ./portal.sh ls <host> <container[:port]> [<local port>]
+#
+#   connect Start a SSH port forward for a container and open remote shell
+#           Usage: ./portal.sh ls <host> <container[:port]> [<local port>]
 #
 # Requirements:
 #   jq, ssh, sed, nc, column, bash 4+
@@ -39,11 +42,14 @@ if [[ $# -lt 2 ]]; then
     echo "Usage:  ${0##*/} <command> <host> [<command args>]"
     echo ""
     echo "Commands:"
-    echo "  ls     List all available container and exposed ports"
-    echo "         Usage: ${0##*/} ls <host>"
+    echo "  ls      List all available container and exposed ports"
+    echo "          Usage: ${0##*/} ls <host>"
     echo ""
-    echo "  bind   Start a SSH port forward for a container"
-    echo "         Usage: ${0##*/} bind <host> <container[:port]> [<local port>]"
+    echo "  bind    Start a SSH port forward for a container"
+    echo "          Usage: ${0##*/} bind <host> <container[:port]> [<local port>]"
+    echo ""
+    echo "  connect Start a SSH port forward for a container and open remote shell"
+    echo "          Usage: ${0##*/} bind <host> <container[:port]> [<local port>]"
     exit 1
 fi
 
