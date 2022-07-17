@@ -28,6 +28,7 @@ VERSION="0.0.1"
 REQUIREMENTS=(jq ssh sed nc column)
 for APP in "${REQUIREMENTS[@]}"; do
     command -v "$APP" > /dev/null 2>&1
+    # shellcheck disable=SC2181
     if [[ $? -ne 0 ]]; then
         >&2 echo "Required '$APP' is not installed"
         exit 1
@@ -94,7 +95,7 @@ case $CMD in
             NAME=$(jq -r '.Names' <<< "$line")
             PORTS=$(jq -r '.Ports' <<< "$line")
             PORTS=$(sed -e "$PORT_SANITIZER" <<< "$PORTS")
-            # shellcheck disable=SC2001
+            # shellcheck disable=SC2001,SC2086
             PORTS=$(sed -e "s/\([0-9]*\)\(,*\)/${COLOR_WHITE}\1${COLOR_RESET}\2/" <<< $PORTS)
             OUTPUT=$(printf "%s\n%s\t| %s" "${OUTPUT}" "${NAME}" "${PORTS}")
         done < <(echo "$SSH_OUTPUT")
