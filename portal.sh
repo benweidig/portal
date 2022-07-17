@@ -108,8 +108,9 @@ case $CMD in
             exit 1
         fi
 
+
         # VALIDATE AND EXTRACT CONTAINER NAME AND PORT
-        CONTAINER_REGEX="^([a-zA-Z0-9_.-]*)(:([1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5]))?$"
+        CONTAINER_REGEX="^([a-zA-Z0-9][a-zA-Z0-9_.-]*)(:([1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5]))?$"
         if [[ ! $3 =~ $CONTAINER_REGEX ]]; then
             >&2 echo "'$3' is not a valid container name (optionally with port)"
             exit 1
