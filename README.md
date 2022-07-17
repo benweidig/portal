@@ -25,6 +25,16 @@ Creating an SSL tunnel is easy, but it's even easier with the `portal`!
 
 `portal connect <host> <container[:port]> [<local port>]`
 
+# Install
+
+```
+# Download
+curl -L -o portal https://raw.githubusercontent.com/benweidig/portal/master/portal.sh
+
+# Make executalbe
+chmod +x portal
+```
+
 # License
 
 MIT. See LICENSE.
