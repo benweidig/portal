@@ -94,6 +94,7 @@ case $CMD in
             NAME=$(jq -r '.Names' <<< "$line")
             PORTS=$(jq -r '.Ports' <<< "$line")
             PORTS=$(sed -e "$PORT_SANITIZER" <<< "$PORTS")
+            # shellcheck disable=SC2001
             PORTS=$(sed -e "s/\([0-9]*\)\(,*\)/${COLOR_WHITE}\1${COLOR_RESET}\2/" <<< $PORTS)
             OUTPUT=$(printf "%s\n%s\t| %s" "${OUTPUT}" "${NAME}" "${PORTS}")
         done < <(echo "$SSH_OUTPUT")
@@ -119,6 +120,7 @@ case $CMD in
         CONTAINER_PORT=${BASH_REMATCH[2]:1}
         
         # RETRIEVE NETWORK SETTINGS OF CONTAINER FOR AT LEAST THE IP
+        # shellcheck disable=SC2029
         SSH_OUTPUT=$(ssh "$HOST" "docker inspect --format '{{json .NetworkSettings}}' $CONTAINER_NAME")
         
         # THE IP IS EITHER DIRECTLY IN .NetworkSettings
@@ -142,12 +144,14 @@ case $CMD in
         LOCAL_PORT=$4
         if [[ -z "$LOCAL_PORT" ]]; then
             nc -z 127.0.0.1 "$CONTAINER_PORT" > /dev/null 2>&1
+            # shellcheck disable=SC2181
             if [[ $? -eq 0 ]]; then
                 >&2 echo "Local port $CONTAINER_PORT is already in use"
                 exit 1
             fi
         else
             nc -z 127.0.0.1 "$LOCAL_PORT" > /dev/null 2>&1
+            # shellcheck disable=SC2181
             if [[ $? -eq 0 ]]; then
                 >&2 echo "Local port $LOCAL_PORT is already in use"
                 exit 1
